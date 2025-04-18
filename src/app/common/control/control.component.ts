@@ -27,7 +27,6 @@ export class ControlComponent {
   private stop$ = new Subject<void>();
 
   protected onChange() {
-    console.log(this.selectedValue);
     const selectedObject: MarketData = this.marketData[this.selectedValue];
 
     this.eventService.emitChangeDataEvent(selectedObject);
@@ -62,11 +61,11 @@ export class ControlComponent {
         this.eventService.emitChangeDataEvent(
           this.marketData[this.selectedValue++]
         );
-      });
 
-    if (this.selectedValue >= this.marketData.length - 1) {
-      this.selectedValue = 0; // or this.stop(); to stop the interval
-    }
+        if (this.selectedValue >= this.marketData.length - 1) {
+          this.selectedValue = 0; // or this.stop(); to stop the interval
+        }
+      });
   }
 
   private stop() {
