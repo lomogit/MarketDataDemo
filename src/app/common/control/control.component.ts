@@ -58,13 +58,15 @@ export class ControlComponent {
     interval(this.intervalTime)
       .pipe(takeUntil(this.stop$))
       .subscribe(() => {
-        this.eventService.emitChangeDataEvent(
-          this.marketData[this.selectedValue++]
-        );
-
-        if (this.selectedValue >= this.marketData.length - 1) {
+        if (+this.selectedValue + 1 >= this.marketData.length) {
           this.selectedValue = 0; // or this.stop(); to stop the interval
+        } else {
+          this.selectedValue++;
         }
+
+        this.eventService.emitChangeDataEvent(
+          this.marketData[this.selectedValue]
+        );
       });
   }
 
