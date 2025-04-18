@@ -64,7 +64,7 @@ export class ControlComponent {
         );
       });
 
-    if (this.selectedValue === this.marketData.length - 1) {
+    if (this.selectedValue >= this.marketData.length - 1) {
       this.selectedValue = 0; // or this.stop(); to stop the interval
     }
   }
