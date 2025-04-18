@@ -1,0 +1,7 @@
+@if(!data() || !marketData()){ loading }@else {
+
+<app-control [marketData]="data()"></app-control>
+<div class="chart-container">
+  <app-chart [marketData]="marketData()" [maxSize]="maxSize"></app-chart>
+</div>
+}

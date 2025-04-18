@@ -1,0 +1,10 @@
+:host {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .checkBoxInput {
+    align-self: center;
+  }
+}

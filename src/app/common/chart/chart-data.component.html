@@ -1,0 +1,25 @@
+<div class="chart-container">
+  @if(this.marketData){
+  <apx-chart
+    #chart
+    [series]="series"
+    [chart]="chartOptions"
+    [dataLabels]="dataLabels"
+    [stroke]="stroke"
+    [colors]="colors"
+    [title]="title"
+    [grid]="grid"
+    [tooltip]="tooltip"
+    [plotOptions]="plotOptions"
+    [yaxis]="yaxis"
+    [xaxis]="xaxis"
+  ></apx-chart>
+  }
+</div>
+<div class="checkBoxInput">
+  <input
+    type="checkbox"
+    [(ngModel)]="isGlobalMaxSize"
+    (change)="onCheckBoxChange()"
+  /><span>Fit to global max size</span>
+</div>

@@ -1,0 +1,31 @@
+<button [disabled]="isStarted" (click)="onStartClick()" title="Play">
+  <i class="fa fa-play"></i>
+</button>
+<button [disabled]="!isStarted" (click)="onStopClick()" title="Stop">
+  <i class="fa fa-stop"></i>
+</button>
+<button
+  [disabled]="isStarted || selectedValue == 0"
+  (click)="onLeftClick()"
+  title="Prev"
+>
+  <i class="fa fa-backward"></i>
+</button>
+<select
+  name="time"
+  class="controll__select-box"
+  (change)="onChange()"
+  [disabled]="isStarted"
+  [(ngModel)]="selectedValue"
+>
+  @for(data of marketData; track getId(); let i = $index){
+  <option [value]="i">{{ data["Time"] | time }}</option>
+  }
+</select>
+<button
+  [disabled]="isStarted || selectedValue == marketData.length - 1"
+  (click)="onRightClick()"
+  title="Next"
+>
+  <i class="fa fa-forward"></i>
+</button>
