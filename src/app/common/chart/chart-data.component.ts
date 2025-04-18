@@ -1,7 +1,7 @@
 import { Component, inject, Input, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { type ChartOptions } from './chart-data.interfaces';
 import { type MarketData } from '../../models/market-data.interface';
 import { type ChartComponent, NgApexchartsModule } from 'ng-apexcharts';
@@ -42,11 +42,16 @@ export class ChartDataComponent {
   //#region Lifecycle
 
   protected ngOnInit() {
-    this.eventSubscription = this.eventService.changeDataEvent$.subscribe(
-      (data: MarketData) => {
+    this.eventSubscription = this.eventService.changeDataEvent$
+      .pipe(
+        //just to be sure that we are not getting the same data to prevent rerender same data
+        filter((data: MarketData) => {
+          return data?.Time !== this.marketData?.Time;
+        })
+      )
+      .subscribe((data: MarketData) => {
         this.updateChartOptions(data);
-      }
-    );
+      });
   }
 
   protected ngAfterViewInit() {
