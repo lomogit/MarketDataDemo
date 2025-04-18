@@ -7,6 +7,12 @@ import { type MarketData } from '../../models/market-data.interface';
 import { type ChartComponent, NgApexchartsModule } from 'ng-apexcharts';
 import { EventService } from '../../services/event.service';
 
+interface OrderBookLevel {
+  price: number;
+  bid: number;
+  ask: number;
+}
+
 @Component({
   selector: 'app-chart',
   imports: [CommonModule, NgApexchartsModule, FormsModule],
@@ -141,11 +147,47 @@ export class ChartDataComponent {
 
   /**parsing data for chart */
   private updateChartOptions(currentData: MarketData) {
+    this.currentMaxSize = 0;
+
+    const grouped: OrderBookLevel[] = this.parceDataSource(currentData);
+
     const asks: number[] = [];
     const bids: number[] = [];
     const size: string[] = [];
 
-    this.currentMaxSize = 0;
+    for (let i = 0; i < grouped.length; i++) {
+      const item = grouped[i];
+
+      size.push(item.price.toString());
+      asks.push(item.ask);
+      bids.push(-item.bid);
+    }
+
+    for (let i = 0; i < this.series.length; i++) {
+      if (this.series[i].name === this.asksString) {
+        this.series[i].data = asks;
+      } else if (this.series[i].name === this.bidsString) {
+        this.series[i].data = bids;
+      }
+    }
+
+    this.xaxis.categories = size;
+
+    this.yaxis.min = this.isGlobalMaxSize
+      ? -this.maxSize
+      : -this.currentMaxSize;
+    this.yaxis.max = this.isGlobalMaxSize ? this.maxSize : this.currentMaxSize;
+
+    this.chart?.updateOptions({
+      title: this.title,
+      series: this.series,
+      xaxis: this.xaxis,
+      yaxis: this.yaxis,
+    });
+  }
+
+  private parceDataSource(currentData: MarketData) {
+    const grouped: OrderBookLevel[] = [];
 
     for (const key in currentData) {
       if (currentData.hasOwnProperty(key)) {
@@ -173,41 +215,17 @@ export class ChartDataComponent {
           }
 
           if (typeof value === 'number' && typeof sizeVal === 'number') {
-            size.push(value.toString());
-
-            if (isBid) {
-              bids.push(sizeVal);
-              asks.push(0);
-            } else {
-              asks.push(-sizeVal);
-              bids.push(0);
-            }
+            grouped.push({
+              price: value,
+              bid: isBid ? sizeVal : 0,
+              ask: isBid ? 0 : sizeVal,
+            });
           }
         }
       }
     }
 
-    for (let i = 0; i < this.series.length; i++) {
-      if (this.series[i].name === this.asksString) {
-        this.series[i].data = asks;
-      } else if (this.series[i].name === this.bidsString) {
-        this.series[i].data = bids;
-      }
-    }
-
-    this.xaxis.categories = size;
-
-    this.yaxis.min = this.isGlobalMaxSize
-      ? -this.maxSize
-      : -this.currentMaxSize;
-    this.yaxis.max = this.isGlobalMaxSize ? this.maxSize : this.currentMaxSize;
-
-    this.chart?.updateOptions({
-      title: this.title,
-      series: this.series,
-      xaxis: this.xaxis,
-      yaxis: this.yaxis,
-    });
+    return grouped.sort((a, b) => b.price - a.price);
   }
 
   protected onCheckBoxChange() {
